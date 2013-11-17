@@ -17,8 +17,8 @@ module DynamoModel
       # @param [Symbol] name name of this attribute
       # @param [Hash] opts serialization options (see specific implementation)
       def initialize(name, opts = {})
-        @name = name
-        @opts = options
+        @name = name.to_sym
+        @opts = opts
       end
 
       # convert value to the value to be stored in DynamoDB.  Not adapter specific.
@@ -35,14 +35,14 @@ module DynamoModel
         value.to_s
       end
 
-      # convert value to api AttributeDefinition.  Adapter specific, so delegates to converter
-      # @see http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeDefinition.html
+      # convert value to api AttributeValue.  Adapter specific, so delegates to converter
+      # @see http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeValue.html
       #
       # @param value value to convert
       # @todo delegate to adapter
-      def to_dynamo_hash(value)
+      def to_dynamo_value_hash(value)
         #adapter.attribute_definition(DYNAMO_TYPE, to_dynamo_value)
-        { DYNAMO_TYPE.downcase.to_sym => to_dynamo_value(value) }
+        { self.class::DYNAMO_TYPE.downcase.to_sym => self.to_dynamo_value(value) }
       end
 
       # convert AttributeDefinition to a value.  Adapter specific, so delegates to converter
@@ -50,14 +50,24 @@ module DynamoModel
       #
       # @param value value to convert
       # @todo delegate to adapter
-      def from_dynamo_hash(from)
+      def from_dynamo_value_hash(from)
         #adapter.attribute_value(DYNAMO_TYPE, to_dynamo_value)
         type, value = from.first
-        if type.to_s.upcase != DYNAMO_TYPE
+        if type.to_s.upcase != self.class::DYNAMO_TYPE
           #TODO logger warning? Exception?
           raise
         end
-        from_dynamo_value(value)
+        self.from_dynamo_value(value)
+      end
+
+      # convert value to api AttributeDefinition.  Adapter specific, so delegates to converter
+      # @see http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_AttributeDefinition.html
+      #
+      # @param value value to convert
+      # @todo delegate to adapter
+      def to_dynamo_definition_hash
+        #adapter.attribute_definition(DYNAMO_TYPE, to_dynamo_value)
+        { self.class::DYNAMO_TYPE.downcase.to_sym => self.name.to_s }
       end
 
     end

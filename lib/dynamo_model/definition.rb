@@ -1,6 +1,18 @@
+require_relative 'attributes/datetime_attr'
+require_relative 'attributes/float_attr'
+require_relative 'attributes/integer_attr'
+require_relative 'attributes/number_attr'
+require_relative 'attributes/string_attr'
+require_relative 'attributes/symbol_attr'
+# @todo easier way to require all?
+
 module DynamoModel
 
   # Defines a DynamoDB Table.  Has methods to define the keys, attribs, parameters
+  # @todo setup client version here?
+  # @todo index setup
+  # @todo initial capacity setup
+  # @todo adapter attach somehow
   class Definition
 
     attr_reader :table_name, :attrs, :keys, :capacity, :indexes
@@ -19,6 +31,19 @@ module DynamoModel
       end
     end
 
+    # set table capacity
+    #
+    # @todo possibly methods to estimate-track this via cache
+    # @param [Integer] read read capacity value
+    # @param [Integer] write write capacity value
+    def capacity(read=nil, write=nil)
+      unless read.nil? and write.nil?
+        @capacity[:read] = read
+        @capacity[:write] = write
+      end
+      @capacity
+    end
+
     #validate the definition
     def valid?
       @attrs.size > 0 and @keys.size > 0 and !@keys[:hash].nil?
@@ -27,8 +52,9 @@ module DynamoModel
     # table name
     #
     # @param [Symbol, String] name of table
-    def table_name(name)
-      @table_name = name.to_s
+    def table_name(name = nil)
+      @table_name = name.to_s if !name.nil?
+      @table_name
     end
 
     # hash key definition
@@ -90,7 +116,7 @@ module DynamoModel
     #
     # @param [Symbol] key name of attribute
     # @param [Hash] opts options passed to attribute (see attribute)
-    def integer(key, opts={})
+    def float(key, opts={})
       @attrs[key.to_sym] = Attributes::FloatAttr.new(key, opts)
     end
 
@@ -107,8 +133,9 @@ module DynamoModel
     #
     # @param [Hash] opts options passed to attribute (see attribute)
     def timestamps(opts={})
-      @attrs[:created_at] = Attributes::DatetimeAttr.new(key, opts)
-      @attrs[:updated_at] = Attributes::DatetimeAttr.new(key, opts)
+      @attrs[:created_at] = Attributes::DatetimeAttr.new(:created_at, opts)
+      @attrs[:updated_at] = Attributes::DatetimeAttr.new(:updated_at, opts)
+      nil
     end
 
   end

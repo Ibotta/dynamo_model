@@ -22,9 +22,9 @@ module DynamoModel
       # @see http://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html#API_PutItem_RequestSyntax Item
       #
       # @return [Hash]
-      def to_dynamo_hash
+      def to_dynamo_value_hash
         self.attributes.each_with_index({}) do |k, v|
-          self.class.columns[k].to_dynamo_hash(v)
+          self.class.columns[k].to_dynamo_value_hash(v)
         end
       end
 
@@ -33,11 +33,11 @@ module DynamoModel
       #
       # @return [Hash]
       # @todo what to do with unknown keys
-      def from_dynamo_hash(item_attribs)
+      def from_dynamo_value_hash(item_attribs)
         item_attribs.each do |key, val|
           key = key.to_sym
           raise if self.class.columns[key].nil?
-          @attribute[key] = self.class.columns[key].from_dynamo_hash(val)
+          @attribute[key] = self.class.columns[key].from_dynamo_value_hash(val)
         end
       end
 

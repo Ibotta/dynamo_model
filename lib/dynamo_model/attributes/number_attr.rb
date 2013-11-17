@@ -1,3 +1,5 @@
+require_relative 'base'
+
 module DynamoModel
   module Attributes
     class NumberAttr < Base

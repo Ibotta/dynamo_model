@@ -1,6 +1,7 @@
-require 'dynamo_model/model/attributes'
-require 'dynamo_model/model/table'
-require 'dynamo_model/model/persistence'
+require_relative 'model/attributes'
+require_relative 'model/table'
+require_relative 'model/persistence'
+require_relative 'model/query'
 
 module DynamoModel
 
@@ -21,8 +22,9 @@ module DynamoModel
     include Model::Attributes
     include Model::Table
     include Model::Persistence
+    include Model::Query
 
-    #todo move to mixin
+    #todo move to mixin?
     #implementation methods
 
     def to_key

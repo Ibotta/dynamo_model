@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
+  spec.add_development_dependency "fakeweb"
 
   spec.add_dependency 'aws-sdk', ">= 1.0.0", '< 2.0' # need to figure out what version V20120810 is in if we require it at all
   spec.add_dependency 'activesupport', "> 3.2", "< 4.0" #ensure not 4.0 yet

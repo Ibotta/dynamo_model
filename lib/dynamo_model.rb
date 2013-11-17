@@ -1,9 +1,10 @@
-require "dynamo_model/version"
+require 'dynamo_model/version'
 require 'active_support'
 require 'active_model'
 
 require 'dynamo_model/base'
 require 'dynamo_model/config'
+require 'dynamo_model/definition'
 
 module DynamoModel
 
