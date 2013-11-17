@@ -42,7 +42,7 @@ module DynamoModel
       # @todo delegate to adapter
       def to_dynamo_hash(value)
         #adapter.attribute_definition(DYNAMO_TYPE, to_dynamo_value)
-        { DYNAMO_TYPE.to_sym => to_dynamo_value(value) }
+        { DYNAMO_TYPE.downcase.to_sym => to_dynamo_value(value) }
       end
 
       # convert AttributeDefinition to a value.  Adapter specific, so delegates to converter

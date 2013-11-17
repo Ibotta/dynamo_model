@@ -3,8 +3,14 @@
 DynamoModel is an attempt at building a more flexible ActiveRecord-like interface
 for DynamoDB.  It utilizes ActiveModel and ActiveSupport to accomplish most of this.
 
-This is still in its infancy and I would absolutely love any assistance. Contact me
+This is still in its infancy and I would absolutely love any assistance. Contact me (@onyxraven)
 here on github.
+
+## Links
+
+* [Documentation](http://rdoc.info/github/Ibotta/dynamo_model/master/frames)
+* [DynamoDB API](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/operationlist.html)
+* [aws-sdk DynamoDB Client](http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/DynamoDB/Client/V20120810.html)
 
 ## Goals
 
@@ -38,7 +44,7 @@ I know there's a lot to do still, so I will try to keep this list up to date.
 
 Add this line to your application's Gemfile:
 
-    gem 'dynamo_model'
+    gem 'dynamo_model', git: "https://github.com/Ibotta/dynamo_model"
 
 And then execute:
 
@@ -50,7 +56,23 @@ Or install it yourself as:
 
 ## Usage
 
-See the rdoc/yard (once they're generated)
+See the [Documentation](http://rdoc.info/github/Ibotta/dynamo_model/master/frames)
+
+```ruby
+
+class DDB < DynamoModel::Base
+
+  definition do |d|
+    d.table_name 'test'
+    d.hash_key :id
+    d.timestamps
+  end
+
+end
+
+
+
+```
 
 ## Contributing
 
