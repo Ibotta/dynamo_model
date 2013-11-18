@@ -5,9 +5,19 @@ module DynamoModel
     module Table
       extend ActiveSupport::Concern
 
+
       module ClassMethods
 
-        # [Hash<Symbol, DynamoType>] list of all column definitions
+        attr_reader :table_name
+
+        # returns the table name
+        # @return [String]
+        # @todo may need mutex in setting case, or not do it this way
+        def table_name
+          @table_name ||= self.model_name.pluralize
+        end
+
+        # @return [Hash<Symbol, DynamoType>] list of all column definitions
         def columns
           @columns
         end
@@ -15,10 +25,11 @@ module DynamoModel
         # Define the table configuration key (table name)  This or a definition block is required
         #
         # @param [String, Symbol] key for configuration lookup about this table
-        # @todo
-        def table_name(key = nil)
-          key ||= self.model_name.pluralize
-          definition(Config.config.table_definitions[definition_key])
+        # @todo make this work w/ config
+        # @todo not sure I like the naming of this vs setting instance table_name
+        def set_table_name(key = nil)
+          key ||= self.table_name
+          definition(Config.config.table_definitions[key])
         end
 
         # Defines the table configuration.  Can be given a Definition object or be a block given a new Definition
@@ -30,16 +41,20 @@ module DynamoModel
         # @yieldparam d [Definition] definition to use
         #
         # @todo needs a mutex around any classvar assignments
+        # @todo not sure I like the naming of this vs storage of the defn instance
+        # @todo different exception type?
         def definition(d = nil)
           @columns = {}
-          @definition = d || Definition.new
+          @definition = (d ||= Definition.new)
 
-          raise NameError, "Table #{definition_key} not defined" unless @definition and @definition.valid?
+          yield(@definition) if block_given?
 
-          @table_name = d.table_name || self.model_name.pluralize
+          raise NameError, "Table not defined" unless @definition and @definition.valid?
+
+          @table_name = @definition.table_name
 
           #use attributes
-          @columns = d.attrs
+          @columns = @definition.attrs
           @columns.each { |key, at| define_attribute(key) }
           define_attribute_methods(columns.keys)
 
@@ -48,6 +63,10 @@ module DynamoModel
 
         protected
 
+        # Define an attribute
+        #
+        # @param [Symbol] name attribute name
+        # @todo how do sets get handled
         def define_attribute(name)
           define_method(name) do
             read_attribute(name)

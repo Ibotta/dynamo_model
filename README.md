@@ -11,6 +11,9 @@ here on github.
 * [Documentation](http://rdoc.info/github/Ibotta/dynamo_model/master/frames)
 * [DynamoDB API](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/operationlist.html)
 * [aws-sdk DynamoDB Client](http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/DynamoDB/Client/V20120810.html)
+* [![Code Climate](https://codeclimate.com/github/Ibotta/dynamo_model.png)](https://codeclimate.com/github/Ibotta/dynamo_model)
+
+> TODO travis.ci
 
 ## Goals
 
@@ -18,6 +21,7 @@ here on github.
  * Provide an ActiveRecord like interface for DynamoDB records
  * Provide a query builder for more advanced queries
  * Provide a method of generating table definitions like migrations/schema.rb
+ * Provide an interface that hides underlying dynamo DB client adapter for the most part
 
 ### Technical
  * Support simple HashKeys as well as RangeKeys
@@ -29,15 +33,25 @@ here on github.
 
 ## Current Status
 
-This is a very basic Proof of Concept as of now. Not a lot of tests, if any.
+This is a very basic Proof of Concept as of now. Will (hopefully) quickly be functionally
+complete.
 
 ### Known Issues
 
+* Currently does not implement an adapter! Yes, this is coming next.
+
 ### ToDos
+This is a list of high-level todo items.  More specific todos are in the code (and docs).
+
 I know there's a lot to do still, so I will try to keep this list up to date.
 
 * Pick a more clever name.  Was thinking about something like Maxwell.
-* Begin writing tests for skeleton PoC
+* Begin adapter for the aws-sdk 1.x V20111205 protocol
+* Begin high level configuration
+* Set up for clean multithread support
+* Figure out best way for automated testing against a mock API
+* Figure out how to support something like FactoryGirl against this api for developers using it.
+* Rails project demo
 * ... lots more ...
 
 ## Installation
@@ -70,9 +84,20 @@ class DDB < DynamoModel::Base
 
 end
 
-
-
 ```
+
+## Motivation
+
+The new protocol has been out for a while, and Amazon has been promoting any new app to
+use it instead of the 2011 protocol. It supports Range Keys, multiple indexes, and implements
+a totally different api structure when it comes to table definitions, etc.
+
+However, the aws-sdk HashModel, ItemCollection, etc are not even capable of supporting range_keys, nevermind other new features.  It seems that HashModel, etc are intended as drop-in replacements
+for the Aws::Record::Model class, replacing SimpleDB with DynamoDB.  Even the Aws::DynamoDB#* will only instantiate the 2011 client.
+
+Amazon's ruby SDK developers have discontinued new work on 1.x in preparation of the 2.x aws-sdk-core, which lacks any model classes altogether at this point.
+
+[Dynamoid](https://github.com/Veraticus/Dynamoid), which is a great start, builds on top of HashModel.  So does [Minidynamo](https://github.com/Vlipco/minidynamo).  This gem is inspired by these projects, but strives to be a more generic and flexible adapter.
 
 ## Contributing
 
